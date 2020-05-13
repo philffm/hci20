@@ -5,17 +5,32 @@
     <title>Hello, WebVR! • A-Frame</title>
     <meta name="viewport" content="width=device-width">
     <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.0/dist/aframe-extras.min.js"></script>
+
     <script src="scripts/main.js" defer></script>
   </head>
   <body>
     <a-scene background="color: #333333">
+
+      
       <a-box id="myBox"
+      position="-2 1 1"
         width="3"
         height="2"
         depth="1"
-        color="#BBAA33" 
+        color="#41C4AB" 
         shadow>
       </a-box>
+      <a-ocean color="aqua" depth="100" width="100"></a-ocean>
+      <a-box position="-1 0.5 -3" rotation="0 45 0" color="#4CC3D9"></a-box>
+      <a-sphere position="0 1.5 -4" radius="1.25" color="#EF2D5E"></a-sphere>
+      <a-cylinder position="1 0.75 -3" radius="0.5" height="1.5" color="#FFC65D"></a-cylinder>
+      <a-plane position="0 0 0" rotation="-90 0 0" width="20" height="20" color="#beac00"></a-plane>
+      <a-sky color="#ECECEC"></a-sky>
+      <a-entity
+        geometry="primitive: box; width: 4; height: auto"
+        material="color: blue"
+        text="value: This text will be 4 units wide."></a-entity>
     </a-scene>
   </body>
 </html>
