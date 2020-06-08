@@ -1,0 +1,28 @@
+
+
+
+
+
+
+
+
+	
+
+
+
+.build/uno/LedControl/src/LedControl.d : lib/LedControl/src/LedControl.cpp
+	@mkdir -p .build/uno/LedControl/src
+	@/usr/share/arduino/hardware/tools/avr/bin/avr-gcc -mmcu=atmega328p -DF_CPU=16000000L -DARDUINO=105 -I/usr/share/arduino/hardware/arduino/cores/arduino -ffunction-sections -fdata-sections -g -Os -w -I/usr/share/arduino/hardware/arduino/variants/standard -I/usr/share/arduino/hardware/arduino/cores/arduino -I/usr/share/arduino/hardware/arduino/cores/arduino/avr-libc -Ilib/LedControl -Ilib/LedControl/src -I/usr/share/arduino/libraries/EEPROM -I/usr/share/arduino/libraries/Firmata -I/usr/share/arduino/libraries/TFT -I/usr/share/arduino/libraries/TFT/utility -I/usr/share/arduino/libraries/Wire -I/usr/share/arduino/libraries/Wire/utility -I/usr/share/arduino/libraries/SPI -I/usr/share/arduino/libraries/Esplora -I/usr/share/arduino/libraries/Robot_Control -I/usr/share/arduino/libraries/Robot_Control/utility -I/usr/share/arduino/libraries/Stepper -I/usr/share/arduino/libraries/GSM -I/usr/share/arduino/libraries/SoftwareSerial -I/usr/share/arduino/libraries/WiFi -I/usr/share/arduino/libraries/WiFi/utility -I/usr/share/arduino/libraries/Ethernet -I/usr/share/arduino/libraries/Ethernet/utility -I/usr/share/arduino/libraries/Robot_Motor -I/usr/share/arduino/libraries/LiquidCrystal -I/usr/share/arduino/libraries/Servo -I/usr/share/arduino/libraries/SD -I/usr/share/arduino/libraries/SD/utility  -MM $^ > $@
+	
+	@printf ".build/uno/LedControl/src/LedControl.d .build/uno/LedControl/src/" | cat - $@ > $@~ && mv $@~ $@
+
+
+
+.build/uno/LedControl/dependencies.d : .build/uno/LedControl/src/LedControl.d
+	@echo [96mScanning dependencies of LedControl[0m
+	@mkdir -p .build/uno/LedControl
+	@cat $^ > $@;
+
+all : .build/uno/LedControl/dependencies.d
+	@true
+
