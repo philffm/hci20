@@ -1,2 +1,8 @@
 public
 .DS_Store
+02_arduino/ldr-control/lib/LedControl/
+02_arduino/magicflask/
+02_arduino/matrix/lib/MAX7219LedMatrix/
+02_arduino/matrix/lib/MD_MAX72XX/
+02_arduino/matrixadvanced/lib/LedControl/
+02_arduino/matrixbasic/lib/LedControl/
