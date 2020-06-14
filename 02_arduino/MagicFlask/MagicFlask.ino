@@ -128,9 +128,6 @@ void loop() {
         activePomodoroTimer=false;
         Serial.println("Pomodoro stop"); 
         delay(10);
-
-
-
     }/*else if (cupTouch<10 ) {
         Serial.println("TRINK!");
        ring16.ColorWipe(COLOR32_BLUE, 100, 0, DIRECTION_DOWN);
