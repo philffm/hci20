@@ -88,7 +88,7 @@ MD_Parola P = MD_Parola(HARDWARE_TYPE, CS_PIN, MAX_DEVICES);
     2   SELECTED AGE (CHILD | TEEN | ADULT)
     3   WIN STATE 
 */
-int journeyStep = 4; 
+int journeyStep = 3; 
 
 
 /* AGE MODES
@@ -257,6 +257,11 @@ void loop ()
     Serial.println("Ultra distance: " + String(calcDistance(1)));
     Serial.println("Noise level: " + String(analogRead(A0)));
     Serial.println("Step: " + String(journeyStep));
+     if (journeyStep == 4) {
+
+      Serial.println("Current ticket number:"+ String(currentTicket));
+      
+    }
     updatePrValues();
 
 
@@ -395,15 +400,15 @@ void goMachine(){
     }// JOURNEY STEP 4 - SPIT THE NUMBER
   else if (journeyStep == 4) {
 
-      P.displayText("NR. 8", PA_CENTER, P.getSpeed(), PAUSE_TIME, PA_SPRITE, PA_PRINT);
+    for (int i = 0; i <= 10; i++) {
+      P.print("NR.");
       delay(1000);
+      P.print(currentTicket, DEC);
+      delay(1000);
+      }
+    journeyStep = 0;
+  }
 
-      
-    }
-
-
-    
-  
 
 }
 
@@ -452,7 +457,19 @@ int calcDistance(int intervals) {
 }
 
 int randomTicket(){
-   return random(300);  
+  int randomNum;
+  // Children prizes (& debug mode)
+  if (ageMode <= 1){
+    randomNum = random(1,8);
+  // Teen prizes
+  }else if (ageMode == 2) {
+    randomNum = random(9,18);
+  // Teen prizes
+  }  else if (ageMode == 3){
+    randomNum = random(19,24);
+  }
+
+  return randomNum;
 }
 
 void newMatrixText(String text) {
