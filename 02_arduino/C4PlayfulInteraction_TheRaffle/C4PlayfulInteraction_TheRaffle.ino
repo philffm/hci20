@@ -39,7 +39,7 @@ const int echoPin = 2;
 const int trigPin = 3;
 int ultraDuration=0;
 int ultraDistance=0;
-int ultraTreshold=20;
+int ultraTreshold=10;
 
 
 // COIN SENSOR (SOUND)
@@ -52,14 +52,14 @@ int speakerPin = 8;
 
 // PHOTORESOSTORS (AGE SELECTION)
 int prChildPin = A1;
-int prTeenPin = A2;
-int prAdultPin = A3;
+//int prTeenPin = A2;
+int prAdultPin = A2; //A3;
 
-int childValue = 0;
-int teenValue = 0;
-int adultValue = 0;
+int childValue;
+//int teenValue;
+int adultValue;
 // TRESHOLD Value (LIGHT TRIGGER)
-int prTreshold = 0;
+int prTreshold;
 
 // HARDWARE SPI
 MD_Parola P = MD_Parola(HARDWARE_TYPE, CS_PIN, MAX_DEVICES);
@@ -88,7 +88,7 @@ MD_Parola P = MD_Parola(HARDWARE_TYPE, CS_PIN, MAX_DEVICES);
     2   SELECTED AGE (CHILD | TEEN | ADULT)
     3   WIN STATE 
 */
-int journeyStep = 0; 
+int journeyStep = 4; 
 
 
 /* AGE MODES
@@ -105,10 +105,10 @@ bool ticketDone=false;
 
 
 // SERVO
-Servo myservo;  // create servo object to control a servo
+Servo jeezServo;  // create servo object to control a servo
 // twelve servo objects can be created on most boards
 
-int servoPos = 90;    // variable to store the servo position
+int servoPos = 50;    // variable to store the servo position
 bool servoDone = false;
 bool servoLoseDone = false;
 
@@ -125,9 +125,48 @@ const uint8_t SPEED_DEADBAND = 5; // in analog units
 
 
 // Sprite Definition
+
+
+
+const uint8_t F_HEART = 5;
+const uint8_t W_HEART = 9;
+const uint8_t PROGMEM heart[F_HEART * W_HEART] =  // beating heart
+{
+  0x0e, 0x11, 0x21, 0x42, 0x84, 0x42, 0x21, 0x11, 0x0e,
+  0x0e, 0x1f, 0x33, 0x66, 0xcc, 0x66, 0x33, 0x1f, 0x0e,
+  0x0e, 0x1f, 0x3f, 0x7e, 0xfc, 0x7e, 0x3f, 0x1f, 0x0e,
+  0x0e, 0x1f, 0x33, 0x66, 0xcc, 0x66, 0x33, 0x1f, 0x0e,
+  0x0e, 0x11, 0x21, 0x42, 0x84, 0x42, 0x21, 0x11, 0x0e,
+};
+const uint8_t F_PMAN1 = 6;
+const uint8_t W_PMAN1 = 8;
+const uint8_t PROGMEM pacman1[F_PMAN1 * W_PMAN1] =  // gobbling pacman animation
+{
+  0x00, 0x81, 0xc3, 0xe7, 0xff, 0x7e, 0x7e, 0x3c,
+  0x00, 0x42, 0xe7, 0xe7, 0xff, 0xff, 0x7e, 0x3c,
+  0x24, 0x66, 0xe7, 0xff, 0xff, 0xff, 0x7e, 0x3c,
+  0x3c, 0x7e, 0xff, 0xff, 0xff, 0xff, 0x7e, 0x3c,
+  0x24, 0x66, 0xe7, 0xff, 0xff, 0xff, 0x7e, 0x3c,
+  0x00, 0x42, 0xe7, 0xe7, 0xff, 0xff, 0x7e, 0x3c,
+};
+
+const uint8_t F_PMAN2 = 6;
+const uint8_t W_PMAN2 = 18;
+const uint8_t PROGMEM pacman2[F_PMAN2 * W_PMAN2] =  // ghost pursued by a pacman
+{
+  0x00, 0x81, 0xc3, 0xe7, 0xff, 0x7e, 0x7e, 0x3c, 0x00, 0x00, 0x00, 0xfe, 0x7b, 0xf3, 0x7f, 0xfb, 0x73, 0xfe,
+  0x00, 0x42, 0xe7, 0xe7, 0xff, 0xff, 0x7e, 0x3c, 0x00, 0x00, 0x00, 0xfe, 0x7b, 0xf3, 0x7f, 0xfb, 0x73, 0xfe,
+  0x24, 0x66, 0xe7, 0xff, 0xff, 0xff, 0x7e, 0x3c, 0x00, 0x00, 0x00, 0xfe, 0x7b, 0xf3, 0x7f, 0xfb, 0x73, 0xfe,
+  0x3c, 0x7e, 0xff, 0xff, 0xff, 0xff, 0x7e, 0x3c, 0x00, 0x00, 0x00, 0xfe, 0x7b, 0xf3, 0x7f, 0xfb, 0x73, 0xfe,
+  0x24, 0x66, 0xe7, 0xff, 0xff, 0xff, 0x7e, 0x3c, 0x00, 0x00, 0x00, 0xfe, 0x7b, 0xf3, 0x7f, 0xfb, 0x73, 0xfe,
+  0x00, 0x42, 0xe7, 0xe7, 0xff, 0xff, 0x7e, 0x3c, 0x00, 0x00, 0x00, 0xfe, 0x7b, 0xf3, 0x7f, 0xfb, 0x73, 0xfe,
+};
+
+
+
 const uint8_t F_ROCKET = 2;
 const uint8_t W_ROCKET = 11;
-static const uint8_t PROGMEM rocket[F_ROCKET * W_ROCKET] =  // rocket
+const uint8_t PROGMEM rocket[F_ROCKET * W_ROCKET] =  // rocket
 {
   0x18, 0x24, 0x42, 0x81, 0x99, 0x18, 0x99, 0x18, 0xa5, 0x5a, 0x81,
   0x18, 0x24, 0x42, 0x81, 0x18, 0x99, 0x18, 0x99, 0x24, 0x42, 0x99,
@@ -170,26 +209,28 @@ void setup ()
     pinMode(micPin, INPUT);
     // PHOTORESISTORS
     pinMode(prChildPin, INPUT);
-    pinMode(prTeenPin, INPUT);
+    //pinMode(prTeenPin, INPUT);
     pinMode(prAdultPin, INPUT);
     // ULTRASONIC
     pinMode(echoPin, INPUT);
     pinMode(trigPin, OUTPUT);
     // SERVO
-    myservo.attach(6);  // attaches the servo on pin 9 to the servo object
+    jeezServo.attach(6);  // attaches the servo on pin 9 to the servo object
 
 
     pinMode(speakerPin, OUTPUT);
     // Parola object
     P.begin();
     P.setSpriteData(rocket, W_ROCKET, F_ROCKET, rocket, W_ROCKET, F_ROCKET);
-    P.displayText(curMessage, scrollAlign, scrollSpeed, scrollPause, scrollEffect, scrollEffect);
+    P.displayText(curMessage, scrollAlign, scrollSpeed, scrollPause, PA_SPRITE, scrollEffect);
 
-    childValue = analogRead(prChildPin);
-    teenValue = analogRead(prTeenPin);
+    childValue = analogRead(prChildPin)*3;
+    // teenValue = analogRead(prTeenPin);
     adultValue = analogRead(prAdultPin);
-    int minTreshold = min(min(childValue,teenValue),adultValue);
-    prTreshold = minTreshold * 0.9;
+    // With teens    int minTreshold = min(min(childValue,teenValue),adultValue);
+    int minTreshold = min(childValue,adultValue);
+
+    prTreshold = minTreshold * 0.5;
     //prTreshold = round(((childValue+teenValue+adultValue)/3)*0.9);
     //int prTreshold = int(analogRead(prChildPin))-15;
     //int prTreshold = round(((analogRead(prChildPin)+analogRead(prTeenPin)+analogRead(prAdultPin))/3))-30;
@@ -197,14 +238,27 @@ void setup ()
 
 
 }
- 
+
+void updatePrValues(){
+  childValue = analogRead(prChildPin)*3;
+  // teenValue = analogRead(prTeenPin);
+  adultValue = analogRead(prAdultPin);
+    // With teens    int minTreshold = min(min(childValue,teenValue),adultValue);
+    int minTreshold = min(childValue,adultValue);
+
+    prTreshold = minTreshold * 0.5; // Testing during the night still buggy due to LED matrix light variance // minTreshold * 0.5;
+}
 void loop () 
-{  
+{  micValue = analogRead(A0);
   // DELAY ALTERNATIVE, UPDATES FREQUENTLY
   currentMillis = millis();
   if((unsigned long)(currentMillis-previousMillis) >= eventInterval*2){
-    Serial.println("Timer gehhht");
-    Serial.println("PR Treshold: " + String(prTreshold) + " "+ String(analogRead(prChildPin))+String(analogRead(prTeenPin))+String(analogRead(prAdultPin)));
+    Serial.println("PR Treshold: " + String(prTreshold) + " "+ String(analogRead(prChildPin)*3)/*+String(analogRead(prTeenPin))*/+String(analogRead(prAdultPin)));
+    Serial.println("Ultra distance: " + String(calcDistance(1)));
+    Serial.println("Noise level: " + String(analogRead(A0)));
+    Serial.println("Step: " + String(journeyStep));
+    updatePrValues();
+
 
     previousMillis = currentMillis;
   }
@@ -220,6 +274,7 @@ void loop ()
     }
     P.displayReset();
   }
+  
   readSerial();
 }
 
@@ -229,33 +284,33 @@ void goMachine(){
   // JOURNEY STEP 0 - IDLE - INSERT CASH
   if(journeyStep == 0){
       micValue = analogRead(A0);
+      jeezServo.write(100);              
+
      // Serial.println(micValue);
       char newMessage[BUF_SIZE] = { "GIB MIR 1 GELD" };
       newMessageAvailable = true;
       strcpy(curMessage, newMessage);
-      if (micValue >=70 ) {
+      if (micValue >=100 ) {
         playTone(1,true);
         journeyStep++;
     }
   // JOURNEY STEP 1 - AGE SELECT
   }else if (journeyStep == 1){
     bool confirmationDone = false; 
+    jeezServo.write(60);              
+
     char newMessage[BUF_SIZE] = { "WIE ALT BIST DU?" };
     newMessageAvailable = true;
     strcpy(curMessage, newMessage);
 
-    childValue = analogRead(prChildPin);
-    teenValue = analogRead(prTeenPin);
-    adultValue = analogRead(prAdultPin);
-
-    if (childValue  <= prTreshold | teenValue  <= prTreshold | adultValue  <= prTreshold  ) {
+    if (childValue  <= prTreshold | /*teenValue  <= prTreshold |*/ adultValue  <= prTreshold  ) {
         if (childValue  <= prTreshold ) {
         playTone(2,true);
         ageMode = 1;
-      }else if (teenValue  <= prTreshold) {
+      }/*else if (teenValue  <= prTreshold) {
         playTone(2,true);
         ageMode = 2;
-      }else if (adultValue  <= prTreshold) {
+      }*/else if (adultValue  <= prTreshold) {
         playTone(2,true);
         ageMode = 3;
       }
@@ -275,12 +330,12 @@ void goMachine(){
       newMessageAvailable = true;
       strcpy(curMessage, newMessage);
       
-    }else if (ageMode == 2) {
+    }/*else if (ageMode == 2) {
       char newMessage[BUF_SIZE] = { "OH, EIN TEENAGER!" };
       newMessageAvailable = true;
       strcpy(curMessage, newMessage);
 
-    }else if (ageMode == 3) {
+    }*/else if (ageMode == 3) {
       char newMessage[BUF_SIZE] = { "OH, EIN ERWACHSENER!" };
       newMessageAvailable = true;
       strcpy(curMessage, newMessage);
@@ -314,7 +369,7 @@ void goMachine(){
         if(servoLoseDone == false){
           for (servoPos = 90; servoPos <= niete; servoPos += 1) { // goes to lose position
             // in steps of 1 degree
-            myservo.write(servoPos);              
+            jeezServo.write(servoPos);              
             delay(30);         
             if(servoPos==niete){
               servoLoseDone = true;
@@ -325,7 +380,7 @@ void goMachine(){
             if (servoPos == gewinn) {
               servoDone = true;
               }else {
-                myservo.write(servoPos);             
+                jeezServo.write(servoPos);             
                 delay(15);
               }
           }
@@ -334,8 +389,15 @@ void goMachine(){
           
         }
          else if (servoDone == true) {
-            newMatrixText("GEWINNER");
+            journeyStep++;
         }
+      
+    }// JOURNEY STEP 4 - SPIT THE NUMBER
+  else if (journeyStep == 4) {
+
+      P.displayText("NR. 8", PA_CENTER, P.getSpeed(), PAUSE_TIME, PA_SPRITE, PA_PRINT);
+      delay(1000);
+
       
     }
 
