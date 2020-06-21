@@ -88,7 +88,7 @@ MD_Parola P = MD_Parola(HARDWARE_TYPE, CS_PIN, MAX_DEVICES);
     2   SELECTED AGE (CHILD | TEEN | ADULT)
     3   WIN STATE 
 */
-int journeyStep = 3; 
+int journeyStep = 0; 
 
 
 /* AGE MODES
@@ -222,7 +222,7 @@ void setup ()
     // Parola object
     P.begin();
     P.setSpriteData(rocket, W_ROCKET, F_ROCKET, rocket, W_ROCKET, F_ROCKET);
-    P.displayText(curMessage, scrollAlign, scrollSpeed, scrollPause, PA_SPRITE, scrollEffect);
+    P.displayText(curMessage, scrollAlign, scrollSpeed, scrollPause, scrollEffect, scrollEffect);
 
     childValue = analogRead(prChildPin)*3;
     // teenValue = analogRead(prTeenPin);
@@ -230,7 +230,7 @@ void setup ()
     // With teens    int minTreshold = min(min(childValue,teenValue),adultValue);
     int minTreshold = min(childValue,adultValue);
 
-    prTreshold = minTreshold * 0.5;
+    //prTreshold = minTreshold * 0.5;
     //prTreshold = round(((childValue+teenValue+adultValue)/3)*0.9);
     //int prTreshold = int(analogRead(prChildPin))-15;
     //int prTreshold = round(((analogRead(prChildPin)+analogRead(prTeenPin)+analogRead(prAdultPin))/3))-30;
@@ -246,21 +246,23 @@ void updatePrValues(){
     // With teens    int minTreshold = min(min(childValue,teenValue),adultValue);
     int minTreshold = min(childValue,adultValue);
 
-    prTreshold = minTreshold * 0.5; // Testing during the night still buggy due to LED matrix light variance // minTreshold * 0.5;
+    if(minTreshold >=120) {
+      prTreshold = 100;
+    }else {prTreshold = minTreshold * 0.8;}
+     // Testing during the night still buggy due to LED matrix light variance // minTreshold * 0.5;
 }
 void loop () 
 {  micValue = analogRead(A0);
   // DELAY ALTERNATIVE, UPDATES FREQUENTLY
   currentMillis = millis();
   if((unsigned long)(currentMillis-previousMillis) >= eventInterval*2){
-    Serial.println("PR Treshold: " + String(prTreshold) + " "+ String(analogRead(prChildPin)*3)/*+String(analogRead(prTeenPin))*/+String(analogRead(prAdultPin)));
+    Serial.println("PR Treshold: " + String(prTreshold) +  String(childValue)+ String(adultValue)/*+String(analogRead(prTeenPin))*/);
     Serial.println("Ultra distance: " + String(calcDistance(1)));
     Serial.println("Noise level: " + String(analogRead(A0)));
+    Serial.println("Age mode: " + String(ageMode));
     Serial.println("Step: " + String(journeyStep));
-     if (journeyStep == 4) {
-
+    if (journeyStep == 4) {
       Serial.println("Current ticket number:"+ String(currentTicket));
-      
     }
     updatePrValues();
 
@@ -272,12 +274,13 @@ void loop ()
   goMachine();
   if (P.displayAnimate())
   {
+      P.displayReset();
+
     if (newMessageAvailable)
     {
       strcpy(curMessage, newMessage);
       newMessageAvailable = false;
     }
-    P.displayReset();
   }
   
   readSerial();
@@ -363,10 +366,7 @@ void goMachine(){
 
       if(ticketDone == false) {
         currentTicket = randomTicket();
-        if(currentTicket >= 1){
-          Serial.println(currentTicket);
-          ticketDone = true;
-        } 
+        ticketDone = true;
       }else if (servoDone == false){
         int niete = 170;
         int gewinn = 0;
@@ -397,16 +397,18 @@ void goMachine(){
             journeyStep++;
         }
       
-    }// JOURNEY STEP 4 - SPIT THE NUMBER
+  }// JOURNEY STEP 4 - SPIT THE NUMBER
   else if (journeyStep == 4) {
 
-    for (int i = 0; i <= 10; i++) {
-      P.print("NR.");
-      delay(1000);
-      P.print(currentTicket, DEC);
-      delay(1000);
-      }
-    journeyStep = 0;
+  char ticketChar = char(currentTicket);
+
+  const char* ticketMsg =  "" ;
+  String ticketStr = "Nr. " + String(currentTicket);
+  ticketStr.toCharArray(ticketMsg,8);
+
+  P.displayText( ticketMsg , PA_CENTER,  P.getSpeed(), PAUSE_TIME, PA_PRINT, PA_SPRITE);
+
+
   }
 
 
@@ -459,8 +461,8 @@ int calcDistance(int intervals) {
 int randomTicket(){
   int randomNum;
   // Children prizes (& debug mode)
-  if (ageMode <= 1){
-    randomNum = random(1,8);
+  if (ageMode == 1 | ageMode == 0){
+    randomNum = random(2,8);
   // Teen prizes
   }else if (ageMode == 2) {
     randomNum = random(9,18);

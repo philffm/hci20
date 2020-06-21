@@ -1,0 +1,30 @@
+The advent raffle in my local christmas market already has a long tradition.
+People from all around the city of Frankfurt come here every year to win great prizes and have a Glühwein or two.
+There are prizes for children, teenagers and grown-ups.
+
+
+But this year the raffle hosted by the local protestantian church is facing new challenges.
+
+How to collect the cash? How can people tell their age and draw according lot numbers? 
+How might we replace this physical experience with something fun and engaging?
+
+Introducing Jeezlot. The touchless raffle machine for your local event.
+
+Just insert a coin, you'll be greeted by a Hallelujah - inspired chime.
+The selection of your age works without any touch. 
+
+Now it's up to your creativity. Sway your hands next to the machine, just like using a magic wand.
+
+Our AI Jesus engine will then determine an appropriate prize for you within seconds, based on the selected age and some secret magic.
+Using the spinning arm, Jeezlot the user through the entire process.
+
+
+The whole thing is running on an Arduino R3 with the following components:
+
+- One Arduino R3 connected to a Raspberry Pi for wireless & embedded testing.
+- A microphone for coin detection
+- Three Light sensors ( For contactless selection of age).
+- an Ultrasonic sensor (virtual magic wand).
+- A Servomotor as (Jesus' hand).
+- A 8x32 LED matrix using the MD_MAX72xx & MD_Parola library
+- And of course: Plenty of cables
