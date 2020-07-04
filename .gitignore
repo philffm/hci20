@@ -6,3 +6,6 @@ public
 02_arduino/matrix/lib/MD_MAX72XX/
 02_arduino/matrixadvanced/lib/LedControl/
 02_arduino/matrixbasic/lib/LedControl/
+.vscode/c_cpp_properties.json
+.vscode/c_cpp_properties.json
+02_arduino/magicflask/wifiSettings.h

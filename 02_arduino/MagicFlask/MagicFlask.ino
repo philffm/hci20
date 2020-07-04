@@ -7,7 +7,11 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include "lcdContent.h"
+#include "wifiSettings.h"
 
+volatile int interruptCounter;
+int totalInterruptCounter;
+hw_timer_t * timer = NULL;
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
 
@@ -24,8 +28,12 @@ NeoPatterns ring16 = NeoPatterns(16, 13, NEO_GRB + NEO_KHZ800, &allPatterns);
 
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
-const char* ssid = "wnet";
-const char* password = "5a299b15e8-fw";
+
+// Alternative to delay function
+const unsigned long eventInterval = 1000;
+unsigned long previousMillis = 0;
+unsigned long currentMillis = 0;
+
 
 int sPomodoroTimer=0;
 bool activePomodoroTimer=false;
