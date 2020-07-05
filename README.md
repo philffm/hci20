@@ -2,3 +2,7 @@
 
 ## All challenges in a 🥜shell
 All my challenges in 1 playlist [PRESS HERE](https://www.youtube.com/watch?v=TIUf5IQku8Y&list=PLJuWfAOeqCbwvZPrUdmP1tGCTc8ZzQJTi&index=1), it's convenient 😎
+
+## 📆 Ongoing development
+See the planned features here
+- MagicFlask [Project status](https://github.com/philffm/hci20/projects/2)
