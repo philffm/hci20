@@ -15,6 +15,13 @@ hw_timer_t * timer = NULL;
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
 
+
+const uint16_t PAUSE_TIME = 1000; // in milliseconds
+const uint8_t SPEED_DEADBAND = 5; // in analog units
+
+int touchSeconds;
+int flaskTouch;
+int cupTouch;
 #include <Adafruit_NeoPixel.h>
 #ifdef __AVR__
 #include <avr/power.h> // Required for 16 MHz Adafruit Trinket
@@ -114,34 +121,49 @@ void setup() {
   Serial.println(WiFi.localIP());
 }
 
-void loop() {
-  //Serial.println(touchRead(T2));  // get value of Touch 0 pin = GPIO 4
-  Serial.println(touchRead(T6));  // get value of Touch 0 pin = GPIO 4
+void updateSensors() {
+  flaskTouch = touchRead(T2);
+  cupTouch = touchRead(T3);
+}
 
-  int flaskTouch = touchRead(T2);
-  int cupTouch = touchRead(T3);
+void checkTouch() {
+  updateSensors();
 
-      if (flaskTouch<10 && activePomodoroTimer==false)   
-    {
+  if (flaskTouch<10 && activePomodoroTimer==false)   {
         Serial.println(flaskTouch);
-         ring16.ColorWipe(COLOR32_GREEN, 50, 0, DIRECTION_DOWN);
-         activePomodoroTimer=true;
+        ring16.ColorWipe(COLOR32_GREEN, 50, 0, DIRECTION_DOWN);
+        activePomodoroTimer=true;
         Serial.println("Pomodoro start"); 
         delay(10);
-
-
-    }else if (flaskTouch<10 && activePomodoroTimer==true) {
+  }else if (flaskTouch<10 && activePomodoroTimer==true) {
         Serial.println(flaskTouch);
         ring16.ColorWipe(COLOR32_RED, 50, 0, DIRECTION_DOWN);
         activePomodoroTimer=false;
         Serial.println("Pomodoro stop"); 
-        delay(10);
-    }/*else if (cupTouch<10 ) {
-        Serial.println("TRINK!");
-       ring16.ColorWipe(COLOR32_BLUE, 100, 0, DIRECTION_DOWN);
+        delay(10);}
+  else{
+    currentMillis = millis();
+    if((unsigned long)(currentMillis-previousMillis) >= eventInterval){
+      if (flaskTouch<10 ){
+        touchSeconds++;
+      } else if (touchSeconds >=5){
+        ring16.ColorWipe(0,0,0,DIRECTION_DOWN);
+        //touchSeconds =0;
+      }
+      }
+    
+  }
 
-       }*/
-  delay(10);
+  
+    
+
+  }
+
+
+void loop() {  
+  checkTouch();
+  //Serial.println(touchRead(T2));  // get value of Touch 0 pin = GPIO 4
+
   ring16.update();    
   ArduinoOTA.handle();
 }
